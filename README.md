@@ -3,7 +3,7 @@ Pytorch implementation of [Learning to Recognize Transient Sound Events Using At
 
 
 ## Citation
-If you use Mmnet in your research, please cit our paper
+If you use M&mnet in your research, please cite our paper
 
     @article{Chou2018mmnet,
       title={Learning to Recognize Transient Sound Events Using Attentional Supervision},
