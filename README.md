@@ -1,4 +1,4 @@
-# M&mnet (A Novel CNN-based Network Architecture for Audio Recognition)
+# M&mnet (A CNN-based Network for Audio Recognition)
 Pytorch implementation of [Learning to Recognize Transient Sound Events Using Attentional Supervision]
 
 

@@ -12,12 +12,13 @@ training_set_csv_fn = './data/groundtruth_weak_label_training_set.csv'
 test_set_csv_fn = './data/groundtruth_weak_label_testing_set.csv'
 
 # DCASE wave file path
-training_set_wav_fp = '/home/fearofchou/ND/m189/max/dataset/DCA17_4/Task_4_DCASE_2017_training_set/unbalanced_train_segments_training_set_audio_formatted_and_segmented_downloads'
-test_set_wav_fp = '/home/fearofchou/ND/m189/max/dataset/DCA17_4/Task_4_DCASE_2017_testing_set/unbalanced_train_segments_testing_set_audio_formatted_and_segmented_downloads'
+training_set_wav_fp = './Task_4_DCASE_2017_training_set/unbalanced_train_segments_training_set_audio_formatted_and_segmented_downloads'
+test_set_wav_fp = './DCA17_4/Task_4_DCASE_2017_testing_set/unbalanced_train_segments_testing_set_audio_formatted_and_segmented_downloads'
 
 # pre_trained model path
-pmp = './data/model/Mmnet_1D_e_35'
+pmp = './Mmnet_DCASE17'
 #pmp = ''
+
 # params for audio feature extraction (mel-spectrogram)
 parser = argparse.ArgumentParser(description= 'PyTorch M&ment Training used DCASE2017 Dataset')
 parser.add_argument('--dn',  default='DCASE17_task4', type=str, help='dataset name')
