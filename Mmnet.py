@@ -30,6 +30,8 @@ class Net(nn.Module):
         self.ks = (1,3)
         self.ps = (0,1)
         inp = channel
+        
+        self.bn = nn.BatchNorm2d(inp)       
             
         self.conv1 = nn.Conv2d(inp, inp, self.ks, padding=self.ps)
         self.b1 = block(inp*1, inp*2)
@@ -48,9 +50,7 @@ class Net(nn.Module):
         self.den2 = nn.Linear(dns, dns)
         self.dbn1 = nn.BatchNorm1d(dns)       
         self.dbn2 = nn.BatchNorm1d(dns)       
-        self.channel = dns
-
-        self.prd = nn.Linear(self.channel, self.nc)
+        self.prd = nn.Linear(dns, self.nc)
     
     def nn_apl(self, x):
         return F.avg_pool2d(x, x.size()[2:]).view(x.size()[0], -1)
@@ -68,11 +68,11 @@ class Net(nn.Module):
         
         x = x.permute(0,2,1,3)
         xs = x.size()
-        Xavg = Xavg.view(1, Xavg.size(0),1,1).repeat(xs[0], 1, xs[2], 1)
-        Xstd = Xstd.view(1, Xstd.size(0),1,1).repeat(xs[0], 1, xs[2], 1)
+        Xavg = Xavg.view(1, Xavg.size(0),1,1).repeat(xs[0], 1, xs[2], xs[3])
+        Xstd = Xstd.view(1, Xstd.size(0),1,1).repeat(xs[0], 1, xs[2], xs[3])
         z_x = (x - Xavg)/Xstd
         
-        #z_x = self.bn(z_x)
+        z_x = self.bn(z_x)
         
         conv1 = self.conv1(z_x)
         b1, bnb1 = self.b1(conv1)
@@ -82,11 +82,11 @@ class Net(nn.Module):
         b3, bnb3 = self.b3(mp2)
         bf = F.relu(self.bnf(b3))
         
-        # pooling
-        tpl = self.nn_apl(bf)
+        # global average pooling
+        gap = self.nn_apl(bf)
 
         #DNN
-        den1 = F.relu(self.dbn1(self.den1(self.dp(tpl))))
+        den1 = F.relu(self.dbn1(self.den1(self.dp(gap))))
         den2 = F.relu(self.dbn2(self.den2(self.dp(den1))))
         y_cls = self.prd(self.dp(den2))
             
@@ -94,6 +94,7 @@ class Net(nn.Module):
         att = self.nn_att(bf, self.att)
         det = self.det(bf)
         
+
         # ensemble prediction
         att_ens = F.softmax(att, dim=3)
         y_att = (det * att_ens).sum(-1).sum(-1)

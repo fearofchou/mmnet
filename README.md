@@ -1,4 +1,4 @@
-# M&mnet
+# M&mnet (A Novel CNN-based Network Architecture for Audio Recognition)
 Pytorch implementation of [Learning to Recognize Transient Sound Events Using Attentional Supervision]
 
 
@@ -36,5 +36,8 @@ Note: You need to modify to your dataset path before you run the code.
     $ python main.py
 
 ## Pre-trained models
-* Coming soon
+Model |DataSet |
+:----:|:--------:|
+[M&mnet](https://github.com/fearofchou/mmnet)|[Task4 DCASE2017](http://www.cs.tut.fi/sgn/arg/dcase2017/challenge/task-large-scale-sound-event-detection)
+[M&mnet (Coming soon)](https://github.com/fearofchou/mmnet)|[AudioSet-2M](https://research.google.com/audioset/)
 
