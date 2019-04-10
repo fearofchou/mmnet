@@ -38,6 +38,6 @@ Note: You need to modify to your dataset path before you run the code.
 ## Pre-trained models
 Model |DataSet |
 :----:|:--------:|
-[M&mnet](https://github.com/fearofchou/mmnet)|[Task4 DCASE2017](http://www.cs.tut.fi/sgn/arg/dcase2017/challenge/task-large-scale-sound-event-detection)
+[M&mnet](https://drive.google.com/file/d/1cdaQNltci_9namelgMS3Vjc16kF8g8A9/view?usp=sharing)|[DCASE2017-Task4](http://www.cs.tut.fi/sgn/arg/dcase2017/challenge/task-large-scale-sound-event-detection)
 [M&mnet (Coming soon)](https://github.com/fearofchou/mmnet)|[AudioSet-2M](https://research.google.com/audioset/)
 

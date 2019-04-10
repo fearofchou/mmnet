@@ -6,18 +6,11 @@ class block(nn.Module):
         super(block, self).__init__()
         self.bn1 = nn.BatchNorm2d(inp)       
         self.conv1 = nn.Conv2d(inp, out, (1,3), padding=(0,1))
-        self.bn2 = nn.BatchNorm2d(out)       
-        self.conv2 = nn.Conv2d(out, out, (1,3), padding=(0,1))
-        self.bn3 = nn.BatchNorm2d(out)       
 
-        self.sk = nn.Conv2d(inp, out, (1,1), padding=(0,0))
     def forward(self, x):
         out = self.bn1(x)
         bn1 = F.relu(out)
         out = self.conv1(out)
-        out = self.conv2(F.relu(self.bn2(out)))
-        out = self.bn3(out)
-        out += self.sk(x)
         return out, bn1
 
 
@@ -25,7 +18,7 @@ class Net(nn.Module):
     def __init__(self, channel, num_classes):
         super(Net, self).__init__()
         self.nc = num_classes
-        self.model_name = 'Mmnet_1D'
+        self.model_name = 'FrameCNN_1D'
 
         self.ks = (1,3)
         self.ps = (0,1)
@@ -39,12 +32,10 @@ class Net(nn.Module):
         self.b3 = block(inp*3, inp*3)
         self.bnf = nn.BatchNorm2d(inp*3)       
         
-        self.ks = (1,1)
-        self.ps = (0,0)
         self.det = nn.Conv2d(inp*3, self.nc, self.ks, padding=self.ps)
         self.att = nn.Conv2d(inp*3, inp*3, self.ks, padding=self.ps)
         
-        self.dp = nn.Dropout(.0)
+        self.dp = nn.Dropout(.5)
         dns = 512*2
         
         # linear
@@ -52,7 +43,8 @@ class Net(nn.Module):
         self.den2 = nn.Linear(dns, dns)
         self.dbn1 = nn.BatchNorm1d(dns)       
         self.dbn2 = nn.BatchNorm1d(dns)       
-        self.prd = nn.Linear(dns, self.nc)
+        #self.prd = nn.Linear(dns, self.nc * 2)
+        self.prd = nn.Linear(dns, self.nc * 1)
     
     def nn_apl(self, x):
         return F.avg_pool2d(x, x.size()[2:]).view(x.size()[0], -1)
@@ -67,11 +59,13 @@ class Net(nn.Module):
         return att_sc
 
     def forward(self, x, Xavg, Xstd):
+    #def forward(self, x):
+        xs = x.size()
+        x = x.view(xs[0], 1, xs[1], xs[2])
         
         x = x.permute(0,2,1,3)
-        xs = x.size()
-        Xavg = Xavg.view(1, Xavg.size(0),1,1).repeat(xs[0], 1, xs[2], xs[3])
-        Xstd = Xstd.view(1, Xstd.size(0),1,1).repeat(xs[0], 1, xs[2], xs[3])
+        #Xavg = Xavg.view(1, Xavg.size(0),1,1).repeat(xs[0], 1, xs[2], xs[3])
+        #Xstd = Xstd.view(1, Xstd.size(0),1,1).repeat(xs[0], 1, xs[2], xs[3])
         z_x = (x - Xavg)/Xstd
         
         z_x = self.bn(z_x)
@@ -94,7 +88,7 @@ class Net(nn.Module):
             
         # attention
         att = self.nn_att(bf, self.att)
-        det = self.det(bf)
+        det = self.det(self.dp(bf))
         
 
         # ensemble prediction
@@ -102,7 +96,10 @@ class Net(nn.Module):
         y_att = (det * att_ens).sum(-1).sum(-1)
         y_ens = (y_cls + y_att)/2
         
+
         return y_ens, [[att, det]]
+        #return y_ens, []
+        #return y_cls, [[att, det]]
 
 
 
